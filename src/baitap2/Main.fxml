@@ -2,6 +2,8 @@
 
 <?import javafx.scene.control.Button?>
 <?import javafx.scene.control.Label?>
+<?import javafx.scene.control.MenuButton?>
+<?import javafx.scene.control.MenuItem?>
 <?import javafx.scene.control.Slider?>
 <?import javafx.scene.control.TableColumn?>
 <?import javafx.scene.control.TableView?>
@@ -9,30 +11,42 @@
 <?import javafx.scene.media.MediaView?>
 <?import javafx.scene.text.Font?>
 
-<AnchorPane prefHeight="529.0" prefWidth="539.0" xmlns="http://javafx.com/javafx/8.0.60" xmlns:fx="http://javafx.com/fxml/1" fx:controller="baitap2.Controller">
+<AnchorPane prefHeight="610.0" prefWidth="540.0" xmlns="http://javafx.com/javafx/8.0.60" xmlns:fx="http://javafx.com/fxml/1" fx:controller="baitap2.Controller">
    <children>
-      <Button fx:id="mofile" layoutY="323.0" mnemonicParsing="false" onAction="#openfile" prefHeight="32.0" prefWidth="56.0" text="Open" />
-      <Button fx:id="playbt" layoutX="56.0" layoutY="323.0" mnemonicParsing="false" onAction="#playmusic" prefHeight="32.0" prefWidth="34.0" text="||" />
-      <TableView fx:id="table" layoutY="355.0" prefHeight="174.0" prefWidth="539.0">
+      <Button fx:id="mofile" layoutX="-97.0" layoutY="-12.0" mnemonicParsing="false" onAction="#openfile" prefHeight="24.0" prefWidth="56.0" text="Open" />
+      <Button fx:id="playbt" layoutX="1.0" layoutY="384.0" mnemonicParsing="false" onAction="#playmusic" prefHeight="32.0" prefWidth="34.0" text="||" />
+      <TableView fx:id="table" layoutX="1.0" layoutY="416.0" prefHeight="194.0" prefWidth="540.0">
         <columns>
           <TableColumn fx:id="time2" prefWidth="116.0" text="Time" />
           <TableColumn fx:id="sub" prefWidth="324.0" text="Sub" />
         </columns>
       </TableView>
-      <Label layoutX="226.0" layoutY="327.0" prefHeight="24.0" prefWidth="71.0" text="Volume">
+      <Label layoutX="235.0" layoutY="388.0" prefHeight="24.0" prefWidth="71.0" text="Volume">
          <font>
             <Font size="14.0" />
          </font></Label>
-      <Slider fx:id="time" layoutY="306.0" prefHeight="20.0" prefWidth="540.0" />
-      <Slider fx:id="volume" layoutX="281.0" layoutY="333.0" prefHeight="13.0" prefWidth="92.0" />
-      <MediaView fx:id="mv" fitHeight="200.0" fitWidth="200.0" />
-      <Button layoutX="468.0" layoutY="323.0" mnemonicParsing="false" onAction="#importexcel" prefHeight="32.0" prefWidth="71.0" text="importXML" fx:id="xml" />
-      <Button layoutX="382.0" layoutY="323.0" mnemonicParsing="false" onAction="#slow" prefHeight="32.0" prefWidth="43.0" text="Slow" />
-      <Button layoutX="425.0" layoutY="323.0" mnemonicParsing="false" onAction="#fast" prefHeight="32.0" prefWidth="43.0" text="fast" />
-      <Label fx:id="ltime" layoutX="110.0" layoutY="329.0" prefHeight="16.0" prefWidth="171.0" AnchorPane.rightAnchor="259.0">
+      <Slider fx:id="time" layoutX="1.0" layoutY="364.0" prefHeight="20.0" prefWidth="540.0" />
+      <Slider fx:id="volume" layoutX="306.0" layoutY="394.0" prefHeight="13.0" prefWidth="128.0" />
+      <MediaView fx:id="mv" fitHeight="312.0" fitWidth="540.0" layoutY="24.0" nodeOrientation="INHERIT" />
+      <Button layoutX="-104.0" layoutY="33.0" mnemonicParsing="false" onAction="#importexcel" prefHeight="24.0" prefWidth="71.0" text="importSub" fx:id="xml" />
+      <Button layoutX="454.0" layoutY="388.0" mnemonicParsing="false" onAction="#slow" prefHeight="24.0" prefWidth="43.0" text="Slow" />
+      <Button layoutX="497.0" layoutY="388.0" mnemonicParsing="false" onAction="#fast" prefHeight="24.0" prefWidth="43.0" text="fast" />
+      <Label fx:id="ltime" layoutX="54.0" layoutY="390.0" prefHeight="16.0" prefWidth="171.0" text="00:00/00:00" AnchorPane.rightAnchor="316.0">
          <font>
             <Font size="14.0" />
          </font>
       </Label>
+      <MenuButton mnemonicParsing="false" text="MenuButton">
+        <items>
+          <MenuItem mnemonicParsing="false" onAction="#openfile" text="Open File" />
+          <MenuItem mnemonicParsing="false" onAction="#importexcel" text="Import Sub" />
+            <MenuItem mnemonicParsing="false" onAction="#slow" text="Slow" />
+            <MenuItem mnemonicParsing="false" onAction="#fast" text="Fast" />
+        </items>
+      </MenuButton>
+      <Label fx:id="lsub" alignment="CENTER" contentDisplay="CENTER" layoutX="1.0" layoutY="323.0" prefHeight="24.0" prefWidth="540.0" textAlignment="CENTER">
+         <font>
+            <Font size="24.0" />
+         </font></Label>
    </children>
 </AnchorPane>

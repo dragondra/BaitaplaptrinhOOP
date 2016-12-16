@@ -17,7 +17,7 @@ public class Main extends Application {
 
 		Parent root = FXMLLoader.load(getClass().getResource("Main.fxml"));
 		Scene scene = new Scene(root);
-		primaryStage.setTitle("Media Music");
+		primaryStage.setTitle("Media Player");
 		primaryStage.setScene(scene);
 		primaryStage.show();
 	}

@@ -11,8 +11,6 @@ import org.apache.poi.ss.usermodel.Row;
 import javafx.application.Platform;
 import javafx.beans.InvalidationListener;
 import javafx.beans.Observable;
-import javafx.beans.binding.Bindings;
-import javafx.beans.property.DoubleProperty;
 import javafx.beans.property.SimpleStringProperty;
 import javafx.collections.FXCollections;
 import javafx.collections.ObservableList;
@@ -36,8 +34,9 @@ import javafx.stage.FileChooser;
 import javafx.util.Duration;
 
 public class Controller {
+	private static int r = 0;
 	@FXML
-	private Label ltime;
+	private Label ltime, lsub;
 	@FXML
 	Duration duration;
 	@FXML
@@ -60,78 +59,82 @@ public class Controller {
 
 	// nut open
 	public void openfile(ActionEvent event) throws IOException {
-		// mo file
-		FileChooser fc = new FileChooser();
-		File seletedFile = fc.showOpenDialog(null);
-		String text = seletedFile.getAbsolutePath();
-		// chay file media
-		me = new Media(new File(text).toURI().toString());
-		mp = new MediaPlayer(me);
-		mv.setMediaPlayer(mp);
-		mp.setAutoPlay(true);
-		// chinh man hinh media
-		DoubleProperty width = mv.fitWidthProperty();
-		DoubleProperty height = mv.fitHeightProperty();
-		width.bind(Bindings.selectDouble(mv.sceneProperty(), "width"));
-		height.bind(Bindings.selectDouble(mv.sceneProperty(), "height"));
-		// slider time
-		time.valueProperty().addListener(new InvalidationListener() {
+		try {
+			// mo file
+			FileChooser fc = new FileChooser();
+			File seletedFile = fc.showOpenDialog(null);
+			String text = seletedFile.getAbsolutePath();
+			System.out.println(text);
+			// chay file media
+			me = new Media(new File(text).toURI().toString());
+			mp = new MediaPlayer(me);
+			mp.setAutoPlay(true);
+			mv.setMediaPlayer(mp);
 
-			public void invalidated(Observable ov) {
-				if (time.isPressed()) {
-					mp.seek(mp.getMedia().getDuration().multiply(time.getValue() / 100));
+			time.valueProperty().addListener(new InvalidationListener() {
+
+				public void invalidated(Observable ov) {
+					if (time.isPressed()) {
+						mp.seek(mp.getMedia().getDuration().multiply(time.getValue() / 100));
+					}
+
 				}
+			});
+			// slider volume
+			volume.setValue(mp.getVolume() * 100);
+			mp.setOnReady(new Runnable() {
+				public void run() {
+					duration = mp.getMedia().getDuration();
+					updatevalue();
+				}
+			});
+			// thoi gian hien tai
+			mp.currentTimeProperty().addListener(new InvalidationListener() {
+				public void invalidated(Observable ov) {
+					updatevalue();
+				}
+			});
+			// volume hien tai
+			volume.valueProperty().addListener(new InvalidationListener() {
+				@Override
+				public void invalidated(Observable observable) {
+					mp.setVolume(volume.getValue() / 100);
 
-			}
-
-		});
-		// slider volume
-		volume.setValue(mp.getVolume() * 100);
-		mp.setOnReady(new Runnable() {
-			public void run() {
-				duration = mp.getMedia().getDuration();
-				updatevalue();
-			}
-		});
-		// thoi gian hien tai
-		mp.currentTimeProperty().addListener(new InvalidationListener() {
-			public void invalidated(Observable ov) {
-				updatevalue();
-			}
-		});
-		// volume hien tai
-		volume.valueProperty().addListener(new InvalidationListener() {
-			@Override
-			public void invalidated(Observable observable) {
-				mp.setVolume(volume.getValue() / 100);
-
-			}
-		});
+				}
+			});
+		} catch (Exception e) {
+			System.out.println("Khong phai file media");
+		}
 	}
 
 	// nut chay nhac hoac dung lai
 	public void playmusic(ActionEvent event) {
-		Status status = mp.getStatus();
-		if (status == Status.PLAYING) {
-			if (mp.getCurrentTime().greaterThanOrEqualTo(mp.getTotalDuration())) {
-				mp.seek(mp.getStartTime());
-				mp.play();
-			} else {
-				mp.pause();
-				playbt.setText(">");
+		try {
+			Status status = mp.getStatus();
+			if (status == Status.PLAYING) {
+				if (mp.getCurrentTime().greaterThanOrEqualTo(mp.getTotalDuration())) {
+					mp.seek(mp.getStartTime());
+					mp.play();
+				} else {
+					mp.pause();
+					playbt.setText(">");
+				}
 			}
-		}
-		if (status == Status.PAUSED || status == Status.HALTED || status == Status.STOPPED) {
-			mp.play();
-			playbt.setText("||");
+			if (status == Status.PAUSED || status == Status.HALTED || status == Status.STOPPED) {
+				mp.play();
+				playbt.setText("||");
+			}
+		} catch (Exception e) {
+			System.out.println("Khong co file media");
 		}
 	}
 
 	// nhap file excel va xuat bang
 	@SuppressWarnings("resource")
 	public void importexcel(ActionEvent event) {
+		// chon file excel
+		data.clear();
 		try {
-			// chon file excel
 			FileChooser fc = new FileChooser();
 			File seletedFile = fc.showOpenDialog(null);
 			FileInputStream fileToBeRead = new FileInputStream(seletedFile);
@@ -147,7 +150,8 @@ public class Controller {
 				if (x.length() > 1 && !x.trim().equals(" ")) {
 					Table entry = new Table(x, sub);
 					data.add(entry);
-					System.out.println(x);
+
+					System.out.print(x + " - ");
 					System.out.println(sub);
 				}
 			}
@@ -155,61 +159,79 @@ public class Controller {
 			time2.setCellValueFactory(new PropertyValueFactory<Table, String>("time"));
 			sub.setCellValueFactory(new PropertyValueFactory<Table, String>("sub"));
 			table.setItems(data);
-			// dieu kien khi nhan vao bang
-			table.setOnMousePressed(new EventHandler<MouseEvent>() {
-				@Override
-				public void handle(MouseEvent event) {
+
+		} catch (Exception e) {
+			System.out.println("Khong phai file excel.xls");
+		}
+		// dieu kien khi nhan vao bang
+
+		table.setOnMousePressed(new EventHandler<MouseEvent>() {
+			@Override
+			public void handle(MouseEvent event) {
+				try {
 					if (event.isPrimaryButtonDown() && event.getClickCount() == 2) {
 						Node node = ((Node) event.getTarget()).getParent();
 						TableRow<?> row;
 						if (node instanceof TableRow) {
 							row = (TableRow<?>) node;
 						} else {
-							// clicking on text part
+
 							row = (TableRow<?>) node.getParent();
 						}
-
+						row.setStyle("-fx-background-color: #808080;");
 						Table selectedRow = table.getItems().get(row.getIndex());
+						r = row.getIndex();
 						String x = selectedRow.getTime();
 						Duration drx = new Duration(doi(x));
 						mp.seek(drx);
 						;
 					}
+				} catch (Exception e) {
+					System.out.println("File excel loi hoac khong co file media");
 				}
-			});
-		} catch (IOException e) {
-			System.out.println("error2");
-		}
+			}
+
+		});
 
 	}
 
 	// nhanh hon
 	public void fast() {
-		if (mp.getRate() != 1.0) {
-			mp.setRate(1.0);
-		} else {
-			mp.setRate(2);
+		try {
+			if (mp.getRate() != 1.0) {
+				mp.setRate(1.0);
+			} else {
+				mp.setRate(2);
+			}
+		} catch (Exception e) {
+			System.out.println("Khong co file media");
 		}
 	}
 
 	// cham hon
 	public void slow() {
-		System.out.println(mp.getRate());
-		if (mp.getRate() != 0.5) {
-			mp.setRate(.5);
-		} else {
-			mp.setRate(1.0);
+		try {
+			System.out.println(mp.getRate());
+			if (mp.getRate() != 0.5) {
+				mp.setRate(.5);
+			} else {
+				mp.setRate(1.0);
+			}
+		} catch (Exception e) {
+			System.out.println("Khong co file media");
 		}
 	}
 
 	// cap nhap gia tri label va slider
 	public void updatevalue() {
 		Platform.runLater(new Runnable() {
-			@SuppressWarnings("deprecation")
+			@SuppressWarnings({ "deprecation" })
 			public void run() {
 				Duration currentTime = mp.getCurrentTime();
 				ltime.setText(formatTime(currentTime, duration));
 				time.setValue(currentTime.divide(duration).toMillis() * 100.0);
+				lsub.setText(formatSub(currentTime, table));
+				table.refresh();
 			}
 		});
 	}
@@ -249,6 +271,71 @@ public class Controller {
 		double dphut = Double.parseDouble(phut);
 		double dgiay = Double.parseDouble(giay);
 		return (int) (dphut * 60000 + dgiay * 1000);
+	}
+
+	// ham dinh dang sub
+	public static String formatSub(Duration time, TableView<Table> table2) {
+		try {
+			// table2.setStyle("-fx-background-color: #808080;");
+			Duration drx = new Duration(doi(table2.getItems().get(r).getTime()));
+			int timese = (int) Math.floor(time.toSeconds());
+
+			// if (timese == drx.toSeconds()) {
+			// ObservableList<Table> tempList = table2.getItems();
+			// Duration tempdrx = new Duration(doi(tempList.get(r).getTime()));
+			// int tempdrxse = (int) Math.floor(tempdrx.toSeconds());
+			// if (tempdrxse >= timese) {
+			// tempList.get(r).setSub("*" + sub.getSub() + "*");
+			// ;
+			// }
+			// r += 1;
+			// return sub.getSub();
+			// }
+			if (timese >= drx.toSeconds()) {
+				ObservableList<Table> tempList = table2.getItems();
+				Duration tempdrx = new Duration(doi(tempList.get(r).getTime()));
+				int tempdrxse = (int) Math.floor(tempdrx.toSeconds());
+				if (tempdrxse >= timese) {
+					tempList.get(r).setSub("*" + table2.getItems().get(r).getSub() + "*");
+					;
+				}
+				r += 1;
+			}
+			return table2.getItems().get(r - 1).getSub();
+			// ObservableList<Table> tempList = table2.getItems();
+			//// for (int i = 0; i < r; i++) {
+			// Duration tempdrx = new Duration(doi(tempList.get(r).getTime()));
+			// int tempdrxse = (int) Math.floor(tempdrx.toSeconds());
+			// if (tempdrxse >= timese) {
+			// tempList.get(r).setSub("*" + x + "*");
+			// ;
+			// }
+
+			// table2.setRowFactory(param ->
+			// {
+			// TableRow<Table> row = new TableRow<>();
+			// int i =row.getIndex();
+			// Duration tempdrx = new Duration(doi(tempList.get(i).getTime()));
+			// int tempdrxse = (int) Math.floor(tempdrx.toSeconds());
+			// System.out.println("row time "+tempdrxse+" - current
+			// time"+timese);
+			// if(timese>tempdrxse){
+			// row.setStyle("-fx-background-color: red");
+			// }
+			// else
+			// row.setStyle("");
+			//
+			//
+			// return row;
+			// });
+
+			// table2..setStyle("-fx-background-color:
+			// #131111;-fx-background-size: 100% 40%");
+			// ObservableList<Table> tempList = table2.getItems();
+
+		} catch (Exception e) {
+		}
+		return null;
 	}
 
 	// ham dinh dang thoi gian
