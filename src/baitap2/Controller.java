@@ -297,7 +297,6 @@ public class Controller {
 				int tempdrxse = (int) Math.floor(tempdrx.toSeconds());
 				if (tempdrxse >= timese) {
 					tempList.get(r).setSub("*" + table2.getItems().get(r).getSub() + "*");
-					;
 				}
 				r += 1;
 			}
