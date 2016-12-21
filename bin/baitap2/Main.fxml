@@ -18,7 +18,7 @@
       <TableView fx:id="table" layoutX="1.0" layoutY="416.0" prefHeight="194.0" prefWidth="540.0">
         <columns>
           <TableColumn fx:id="time2" prefWidth="116.0" text="Time" />
-          <TableColumn fx:id="sub" prefWidth="324.0" text="Sub" />
+          <TableColumn fx:id="sub" prefWidth="417.0" text="Sub" />
         </columns>
       </TableView>
       <Label layoutX="235.0" layoutY="388.0" prefHeight="24.0" prefWidth="71.0" text="Volume">
